@@ -1341,13 +1341,13 @@ The following example has type and method level mappings:
 	class PersonController {
 
 		@GetMapping("/{id}")
-		public Person getPerson(@PathVariable Long id) {
+		public pojo.Person getPerson(@PathVariable Long id) {
 			// ...
 		}
 
 		@PostMapping
 		@ResponseStatus(HttpStatus.CREATED)
-		public void add(@RequestBody Person person) {
+		public void add(@RequestBody pojo.Person person) {
 			// ...
 		}
 	}

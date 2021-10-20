@@ -27,7 +27,7 @@
 	</bean>
 
 	<bean id="serializableSettersAdvised" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="proxyInterfaces"><value>org.springframework.tests.sample.beans.Person</value></property>
+		<property name="proxyInterfaces"><value>org.springframework.tests.sample.beans.pojo.Person</value></property>
 		<property name="target">
 			<bean class="org.springframework.tests.sample.beans.SerializablePerson">
 				<property name="name"><value>serializableSettersAdvised</value></property>

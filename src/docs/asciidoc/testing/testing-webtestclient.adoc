@@ -175,7 +175,7 @@ Then you can use built-in assertions for the body. The following example shows o
 	client.get().uri("/persons")
 			.exchange()
 			.expectStatus().isOk()
-			.expectBodyList(Person.class).hasSize(3).contains(person);
+			.expectBodyList(pojo.Person.class).hasSize(3).contains(person);
 ----
 ====
 
@@ -186,7 +186,7 @@ You can also go beyond the built-in assertions and create your own, as the follo
 	client.get().uri("/persons/1")
 			.exchange()
 			.expectStatus().isOk()
-			.expectBody(Person.class)
+			.expectBody(pojo.Person.class)
 			.consumeWith(result -> {
 				// custom assertions (e.g. AssertJ)...
 			});
@@ -197,10 +197,10 @@ You can also exit the workflow and get a result, as follows:
 
 ====
 ----
-	EntityExchangeResult<Person> result = client.get().uri("/persons/1")
+	EntityExchangeResult<pojo.Person> result = client.get().uri("/persons/1")
 			.exchange()
 			.expectStatus().isOk()
-			.expectBody(Person.class)
+			.expectBody(pojo.Person.class)
 			.returnResult();
 ----
 ====
@@ -236,7 +236,7 @@ Alternatively, if you want to assert there is no response content, you can use c
 [subs="verbatim,quotes"]
 ----
 	client.post().uri("/persons")
-			.body(personMono, Person.class)
+			.body(personMono, pojo.Person.class)
 			.exchange()
 			.expectStatus().isCreated()
 			.expectBody().isEmpty();

@@ -514,42 +514,88 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
+		//对象锁加锁
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
+			/**
+			 * 刷新前的预处理
+			 * 表示在真正做refresh操作之前需要准备做的事情：
+			 * 1/设置Spring容器的启动时间
+			 * 2/开启活跃状态，撤销关闭状态
+			 * 3/验证环境信息里一些必须存在的属性等
+			 */
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			/**
+			 * 获取BeanFactory，默认实现是DefaultListableBeanFactory
+			 * 加载BeanDefition并注册到BeanDefinitionRegistry
+			 */
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			/**
+			 * BeanFactory的预准备工作（BeanFactory进行一些设置，比如context的类加载器等）
+			 */
 			prepareBeanFactory(beanFactory);
 
 			try {
 				// Allows post-processing of the bean factory in context subclasses.
+				/**
+				 * BeanFactory准备工作完成后进行的后置工作
+				 */
 				postProcessBeanFactory(beanFactory);
 
 				// Invoke factory processors registered as beans in the context.
+				/**
+				 * 实例化实现BeanFactoryPostProcessor接口的Bean，并调用接口方法
+				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
 
 				// Register bean processors that intercept bean creation.
+				/**
+				 * 注册BeanPostProcessor(Bean的后置处理器)，在创建bean的前后等执行
+				 */
 				registerBeanPostProcessors(beanFactory);
 
 				// Initialize message source for this context.
+				/**
+				 * 初始化MessageSource组件（做国际化；消息绑定，消息解析）
+				 */
 				initMessageSource();
 
 				// Initialize event multicaster for this context.
+				/**
+				 * 初始化事件派发器
+				 */
 				initApplicationEventMulticaster();
 
 				// Initialize other special beans in specific context subclasses.
+				/**
+				 * 子类重写这个方法，在容器刷新的时候可以自定义逻辑；如创建Tomcat，jetty等WEB服务器
+				 */
 				onRefresh();
 
 				// Check for listener beans and register them.
+				/**
+				 * 注册应用的监听器，就是注册实现了ApplicationListener接口的监听器Bean
+				 */
 				registerListeners();
 
 				// Instantiate all remaining (non-lazy-init) singletons.
+				/**
+				 * 初始化所有剩下的非懒加载的单例Bean
+				 * 初始化创建非懒加载方式的单例Bean实例（未设置属性）
+				 * 填充属性
+				 * 初始化方法调用（比如afterPropertiesSet方法、init-method方法）
+				 * 调用BeanPostProcessor（后置处理器）对实例bean进行后置处理
+				 */
 				finishBeanFactoryInitialization(beanFactory);
 
 				// Last step: publish corresponding event.
+				/**
+				 * 完成context的刷新，主要是调用LifecycleProcessor的onRefresh()方法，并且发布事件（ContextRefreshedEvent）
+				 */
 				finishRefresh();
 			}
 
@@ -583,6 +629,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void prepareRefresh() {
 		// Switch to active.
+		//启动日期startupDate和活动标志active
 		this.startupDate = System.currentTimeMillis();
 		this.closed.set(false);
 		this.active.set(true);

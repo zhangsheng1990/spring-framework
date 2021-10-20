@@ -277,10 +277,10 @@ The following example shows how to do so:
 ----
 	WebClient client = WebClient.create("https://example.org");
 
-	Mono<Person> result = client.get()
+	Mono<pojo.Person> result = client.get()
 			.uri("/persons/{id}", id).accept(MediaType.APPLICATION_JSON)
 			.retrieve()
-			.bodyToMono(Person.class);
+			.bodyToMono(pojo.Person.class);
 ----
 ====
 
@@ -307,12 +307,12 @@ as the following example shows:
 [source,java,intent=0]
 [subs="verbatim,quotes"]
 ----
-	Mono<Person> result = client.get()
+	Mono<pojo.Person> result = client.get()
 			.uri("/persons/{id}", id).accept(MediaType.APPLICATION_JSON)
 			.retrieve()
 			.onStatus(HttpStatus::is4xxServerError, response -> ...)
 			.onStatus(HttpStatus::is5xxServerError, response -> ...)
-			.bodyToMono(Person.class);
+			.bodyToMono(pojo.Person.class);
 ----
 ====
 
@@ -333,10 +333,10 @@ to `retrieve()` but also provides access to the `ClientResponse`:
 [source,java,intent=0]
 [subs="verbatim,quotes"]
 ----
-	Mono<Person> result = client.get()
+	Mono<pojo.Person> result = client.get()
 			.uri("/persons/{id}", id).accept(MediaType.APPLICATION_JSON)
 			.exchange()
-			.flatMap(response -> response.bodyToMono(Person.class));
+			.flatMap(response -> response.bodyToMono(pojo.Person.class));
 ----
 ====
 
@@ -346,10 +346,10 @@ At this level, you can also create a full `ResponseEntity`:
 [source,java,intent=0]
 [subs="verbatim,quotes"]
 ----
-	Mono<ResponseEntity<Person>> result = client.get()
+	Mono<ResponseEntity<pojo.Person>> result = client.get()
 			.uri("/persons/{id}", id).accept(MediaType.APPLICATION_JSON)
 			.exchange()
-			.flatMap(response -> response.toEntity(Person.class));
+			.flatMap(response -> response.toEntity(pojo.Person.class));
 ----
 ====
 
@@ -374,12 +374,12 @@ The request body can be encoded from an `Object`, as the following example shows
 [source,java,intent=0]
 [subs="verbatim,quotes"]
 ----
-	Mono<Person> personMono = ... ;
+	Mono<pojo.Person> personMono = ... ;
 
 	Mono<Void> result = client.post()
 			.uri("/persons/{id}", id)
 			.contentType(MediaType.APPLICATION_JSON)
-			.body(personMono, Person.class)
+			.body(personMono, pojo.Person.class)
 			.retrieve()
 			.bodyToMono(Void.class);
 ----
@@ -391,12 +391,12 @@ You can also have a stream of objects be encoded, as the following example shows
 [source,java,intent=0]
 [subs="verbatim,quotes"]
 ----
-	Flux<Person> personFlux = ... ;
+	Flux<pojo.Person> personFlux = ... ;
 
 	Mono<Void> result = client.post()
 			.uri("/persons/{id}", id)
 			.contentType(MediaType.APPLICATION_STREAM_JSON)
-			.body(personFlux, Person.class)
+			.body(personFlux, pojo.Person.class)
 			.retrieve()
 			.bodyToMono(Void.class);
 ----
@@ -409,7 +409,7 @@ as the following example shows:
 [source,java,intent=0]
 [subs="verbatim,quotes"]
 ----
-	Person person = ... ;
+	pojo.Person person = ... ;
 
 	Mono<Void> result = client.post()
 			.uri("/persons/{id}", id)
@@ -475,7 +475,7 @@ multipart request. The following example shows how to create a `MultiValueMap<St
 	MultipartBodyBuilder builder = new MultipartBodyBuilder();
 	builder.part("fieldPart", "fieldValue");
 	builder.part("filePart", new FileSystemResource("...logo.png"));
-	builder.part("jsonPart", new Person("Jason"));
+	builder.part("jsonPart", new pojo.Person("Jason"));
 
 	MultiValueMap<String, HttpEntity<?>> parts = builder.build();
 ----
@@ -621,12 +621,12 @@ WebClient client = webClient.mutate()
 [source,java,intent=0]
 [subs="verbatim,quotes"]
 ----
-Person person = client.get().uri("/person/{id}", i).retrieve()
-	.bodyToMono(Person.class)
+pojo.Person person = client.get().uri("/person/{id}", i).retrieve()
+	.bodyToMono(pojo.Person.class)
 	.block();
 
-List<Person> persons = client.get().uri("/persons").retrieve()
-	.bodyToFlux(Person.class)
+List<pojo.Person> persons = client.get().uri("/persons").retrieve()
+	.bodyToFlux(pojo.Person.class)
 	.collectList()
 	.block();
 ----
@@ -637,8 +637,8 @@ response individually, and instead wait for the combined result:
 [source,java,intent=0]
 [subs="verbatim,quotes"]
 ----
-Mono<Person> personMono = client.get().uri("/person/{id}", personId)
-		.retrieve().bodyToMono(Person.class);
+Mono<pojo.Person> personMono = client.get().uri("/person/{id}", personId)
+		.retrieve().bodyToMono(pojo.Person.class);
 
 Mono<List<Hobby>> hobbiesMono = client.get().uri("/person/{id}/hobbies", personId)
 		.retrieve().bodyToFlux(Hobby.class).collectList();

@@ -104,13 +104,13 @@ Mono<String> string = request.bodyToMono(String.class);
 ----
 ====
 
-The following example extracts the body to a `Flux<Person>`, where `Person` objects are decoded from some
+The following example extracts the body to a `Flux<pojo.Person>`, where `pojo.Person` objects are decoded from some
 serialized form, such as JSON or XML:
 
 ====
 [source,java]
 ----
-Flux<Person> people = request.bodyToFlux(Person.class);
+Flux<pojo.Person> people = request.bodyToFlux(pojo.Person.class);
 ----
 ====
 
@@ -123,7 +123,7 @@ also be written as follows:
 [source,java]
 ----
 Mono<String> string = request.body(BodyExtractors.toMono(String.class));
-Flux<Person> people = request.body(BodyExtractors.toFlux(Person.class));
+Flux<pojo.Person> people = request.body(BodyExtractors.toFlux(pojo.Person.class));
 ----
 ====
 
@@ -167,8 +167,8 @@ content:
 ====
 [source,java]
 ----
-Mono<Person> person = ...
-ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(person, Person.class);
+Mono<pojo.Person> person = ...
+ServerResponse.ok().contentType(MediaType.APPLICATION_JSON).body(person, pojo.Person.class);
 ----
 ====
 
@@ -211,7 +211,7 @@ That is convenient, but in an application we need multiple functions, and multip
 lambda's can get messy.
 Therefore, it is useful to group related handler functions together into a handler class, which
 has a similar role as  `@Controller` in an annotation-based application.
-For example, the following class exposes a reactive `Person` repository:
+For example, the following class exposes a reactive `pojo.Person` repository:
 
 ====
 [source,java,indent=0]
@@ -230,12 +230,12 @@ public class PersonHandler {
 	}
 
 	public Mono<ServerResponse> listPeople(ServerRequest request) { // <1>
-		Flux<Person> people = repository.allPeople();
-		return ok().contentType(APPLICATION_JSON).body(people, Person.class);
+		Flux<pojo.Person> people = repository.allPeople();
+		return ok().contentType(APPLICATION_JSON).body(people, pojo.Person.class);
 	}
 
 	public Mono<ServerResponse> createPerson(ServerRequest request) { // <2>
-		Mono<Person> person = request.bodyToMono(Person.class);
+		Mono<pojo.Person> person = request.bodyToMono(pojo.Person.class);
 		return ok().build(repository.savePerson(person));
 	}
 
@@ -247,15 +247,15 @@ public class PersonHandler {
 	}
 }
 ----
-<1> `listPeople` is a handler function that returns all `Person` objects found in the repository as
+<1> `listPeople` is a handler function that returns all `pojo.Person` objects found in the repository as
 JSON.
-<2> `createPerson` is a handler function that stores a new `Person` contained in the request body.
-Note that `PersonRepository.savePerson(Person)` returns `Mono<Void>`: an empty `Mono` that emits
+<2> `createPerson` is a handler function that stores a new `pojo.Person` contained in the request body.
+Note that `PersonRepository.savePerson(pojo.Person)` returns `Mono<Void>`: an empty `Mono` that emits
 a completion signal when the person has been read from the request and stored. So we use the
 `build(Publisher<Void>)` method to send a response when that completion signal is received (that is,
-when the `Person` has been saved).
+when the `pojo.Person` has been saved).
 <3> `getPerson` is a handler function that returns a single person, identified by the `id` path
-variable. We retrieve that `Person` from the repository and create a JSON response, if it is
+variable. We retrieve that `pojo.Person` from the repository and create a JSON response, if it is
 found. If it is not found, we use `switchIfEmpty(Mono<T>)` to return a 404 Not Found response.
 ====
 
@@ -266,7 +266,7 @@ found. If it is not found, we use `switchIfEmpty(Mono<T>)` to return a 404 Not F
 
 A functional endpoint can use Spring's <<core.adoc#validation, validation facilities>> to
 apply validation to the request body. For example, given a custom Spring
-<<core.adoc#validation, Validator>> implementation for a `Person`:
+<<core.adoc#validation, Validator>> implementation for a `pojo.Person`:
 
 ====
 [source,java,indent=0]
@@ -279,11 +279,11 @@ public class PersonHandler {
 	// ...
 
 	public Mono<ServerResponse> createPerson(ServerRequest request) {
-		Mono<Person> person = request.bodyToMono(Person.class).doOnNext(this::validate); <2>
+		Mono<pojo.Person> person = request.bodyToMono(pojo.Person.class).doOnNext(this::validate); <2>
 		return ok().build(repository.savePerson(person));
 	}
 
-	private void validate(Person person) {
+	private void validate(pojo.Person person) {
 		Errors errors = new BeanPropertyBindingResult(body, "person");
 		validator.validate(body, errors);
 		if (errors.hasErrors) {
